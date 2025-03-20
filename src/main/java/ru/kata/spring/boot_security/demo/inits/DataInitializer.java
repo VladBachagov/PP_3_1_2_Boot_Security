@@ -1,4 +1,4 @@
-package ru.kata.spring.boot_security.demo.init;
+package ru.kata.spring.boot_security.demo.inits;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;

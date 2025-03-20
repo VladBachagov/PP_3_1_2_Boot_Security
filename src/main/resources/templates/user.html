@@ -2,15 +2,24 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Личный кабинет</title>
+    <title>User-page</title>
 </head>
 <body>
-<h1>Личный кабинет</h1>
+<h1>USER-PAGE</h1>
 
 <p>Привет, <span th:text="${user.username}"></span>!</p>
 
-<p>Ваши роли: <span th:text="${user.roles}"></span></p>
+<p>Ваши роли:
+    <span th:each="role, iterStat : ${user.roles}" th:text="${role.name}">
+        <span th:if="${!iterStat.last}">, </span>
+    </span>
+</p>
 
-<a href="/logout">Выйти</a>
+<!-- Кнопка Logout -->
+<form th:action="@{/logout}" method="post" style="display: inline;">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+    <button type="submit">logout</button>
+</form>
 
 </body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Edit User</title>
+</head>
+<body>
+<h1>Edit User</h1>
+
+<!-- Форма для редактирования пользователя -->
+<form th:action="@{/admin/update}" th:object="${user}" method="post">
+    <!-- Скрытое поле для ID пользователя -->
+    <input type="hidden" th:field="*{id}"/>
+
+    <!-- Поле для ввода username -->
+    <input type="text" th:field="*{username}" placeholder="Username">
+    <span th:if="${#fields.hasErrors('username')}" th:errors="*{username}" style="color: red;"></span><br>
+
+    <!-- Поле для ввода password -->
+    <input type="password" th:field="*{password}" placeholder="Password">
+    <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}" style="color: red;"></span><br>
+
+    <!-- Выбор ролей -->
+    <select th:field="*{roles}" multiple required>
+        <option th:each="role : ${allRoles}" th:value="${role.id}" th:text="${role.name}"></option>
+    </select>
+    <span th:if="${#fields.hasErrors('roles')}" th:errors="*{roles}" style="color: red;"></span><br>
+
+    <!-- CSRF-токен -->
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+    <!-- Кнопка для обновления пользователя -->
+    <button type="submit">Update User</button>
+</form>
+
+<!-- Кнопка "Назад" -->
+<a href="/admin">Back to Admin Panel</a>
+</body>
+</html>

@@ -6,10 +6,38 @@
 <body>
 <h1>Admin Panel</h1>
 
+<!-- Кнопка Logout -->
+<form th:action="@{/logout}" method="post" style="display: inline;">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+    <button type="submit">Logout</button>
+</form>
+
+<!-- Кнопка для перехода на страницу user.html -->
+<a th:href="@{/user}">
+    <button type="button">Go to User Page</button>
+</a>
+
 <!-- Форма для создания нового пользователя -->
 <form th:action="@{/admin/create}" th:object="${newUser}" method="post">
+    <!-- Поле для ввода username -->
     <input type="text" th:field="*{username}" placeholder="Username">
+    <span th:if="${#fields.hasErrors('username')}" th:errors="*{username}" style="color: red;"></span>
+    <span th:if="${usernameError != null}" th:text="${usernameError}" style="color: red;"></span><br>
+
+    <!-- Поле для ввода password -->
     <input type="password" th:field="*{password}" placeholder="Password">
+    <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}" style="color: red;"></span><br>
+
+    <!-- Выбор ролей -->
+    <select th:field="*{roles}" multiple required>
+        <option th:each="role : ${allRoles}" th:value="${role.id}" th:text="${role.name}"></option>
+    </select>
+    <span th:if="${#fields.hasErrors('roles')}" th:errors="*{roles}" style="color: red;"></span><br>
+
+    <!-- CSRF-токен -->
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+    <!-- Кнопка для создания пользователя -->
     <button type="submit">Create User</button>
 </form>
 
@@ -17,8 +45,25 @@
 <h2>Users:</h2>
 <ul>
     <li th:each="user : ${users}">
+        <!-- Имя пользователя -->
         <span th:text="${user.username}"></span>
-        <a th:href="@{/admin/delete/{id}(id=${user.id})}">Delete</a>
+
+        <!-- Роли пользователя -->
+        <span th:if="${user.roles != null and !user.roles.isEmpty()}">
+            (Roles:
+            <span th:each="role, iterStat : ${user.roles}" th:text="${role.name}">
+                <span th:if="${!iterStat.last}">, </span>
+            </span>)
+        </span>
+
+        <!-- Кнопка Edit -->
+        <a th:href="@{/admin/edit/{id}(id=${user.id})}">Edit</a>
+
+        <!-- Форма для удаления пользователя -->
+        <form th:action="@{/admin/delete/{id}(id=${user.id})}" method="post" style="display: inline;">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <button type="submit">Delete</button>
+        </form>
     </li>
 </ul>
 </body>
