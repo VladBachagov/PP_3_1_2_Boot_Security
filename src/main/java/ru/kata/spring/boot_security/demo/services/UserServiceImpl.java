@@ -3,6 +3,7 @@ package ru.kata.spring.boot_security.demo.services;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import ru.kata.spring.boot_security.demo.errors.UsernameNotUniqueException;
 import ru.kata.spring.boot_security.demo.models.User;
 import ru.kata.spring.boot_security.demo.repositories.UserRepository;
 
@@ -28,13 +29,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findById(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
     }
 
     @Override
     public void save(User user) {
         if (userRepository.existsByUsername(user.getUsername())) {
-            throw new IllegalArgumentException("Username already exists");
+            throw new UsernameNotUniqueException("Username already exists");
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
@@ -55,7 +56,7 @@ public class UserServiceImpl implements UserService {
 
         if (!user.getUsername().equals(existingUser.getUsername())) {
             if (userRepository.existsByUsername(user.getUsername())) {
-                throw new IllegalArgumentException("Username already exists");
+                throw new UsernameNotUniqueException("Username already exists");
             }
             existingUser.setUsername(user.getUsername());
         }

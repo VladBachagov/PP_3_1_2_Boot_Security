@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import ru.kata.spring.boot_security.demo.models.User;
-import ru.kata.spring.boot_security.demo.repositories.RoleRepository;
+import ru.kata.spring.boot_security.demo.services.RoleService;
 import ru.kata.spring.boot_security.demo.services.UserService;
 
 import javax.validation.Valid;
@@ -22,19 +22,19 @@ import java.security.Principal;
 public class AdminController {
 
     private final UserService userService;
-    private final RoleRepository roleRepository;
+    private final RoleService roleService;
 
     @Autowired
-    public AdminController(UserService userService, RoleRepository roleRepository) {
+    public AdminController(UserService userService, RoleService roleService) {
         this.userService = userService;
-        this.roleRepository = roleRepository;
+        this.roleService = roleService;
     }
 
     @GetMapping
     public String adminPanel(Model model) {
         model.addAttribute("newUser", new User());
         model.addAttribute("users", userService.findAll());
-        model.addAttribute("allRoles", roleRepository.findAll());
+        model.addAttribute("allRoles", roleService.getListRoles());
         return "admin";
     }
 
@@ -42,7 +42,7 @@ public class AdminController {
     public String createUser(@Valid @ModelAttribute("newUser") User user, BindingResult result, Model model) {
         if (result.hasErrors()) {
             model.addAttribute("users", userService.findAll());
-            model.addAttribute("allRoles", roleRepository.findAll());
+            model.addAttribute("allRoles", roleService.getListRoles());
             return "admin";
         }
 
@@ -51,10 +51,9 @@ public class AdminController {
         } catch (IllegalArgumentException e) {
             model.addAttribute("usernameError", e.getMessage());
             model.addAttribute("users", userService.findAll());
-            model.addAttribute("allRoles", roleRepository.findAll());
+            model.addAttribute("allRoles", roleService.getListRoles());
             return "admin";
         }
-
         return "redirect:/admin";
     }
 
@@ -68,14 +67,14 @@ public class AdminController {
     public String editUser(@PathVariable Long id, Model model) {
         User user = userService.findById(id);
         model.addAttribute("user", user);
-        model.addAttribute("allRoles", roleRepository.findAll());
+        model.addAttribute("allRoles", roleService.getListRoles());
         return "edit-user";
     }
 
     @PostMapping("/update")
     public String updateUser(@Valid @ModelAttribute("user") User user, BindingResult result, Model model) {
         if (result.hasErrors()) {
-            model.addAttribute("allRoles", roleRepository.findAll());
+            model.addAttribute("allRoles", roleService.getListRoles());
             return "edit-user";
         }
 
@@ -83,7 +82,7 @@ public class AdminController {
             userService.update(user);
         } catch (IllegalArgumentException e) {
             model.addAttribute("usernameError", e.getMessage());
-            model.addAttribute("allRoles", roleRepository.findAll());
+            model.addAttribute("allRoles", roleService.getListRoles());
             return "edit-user";
         }
 
